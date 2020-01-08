@@ -65,14 +65,16 @@ def create_json(testpath, filename="metadata.json", always_make=False):
     json_filename = str(testpath / filename)
     if not always_make:
         if testpath.glob(filename):
-            log.debug('File "%s" already exist, so no need to re-create it', json_filename)
+            log.debug(
+                'File "%s" already exist, so no need to re-create it', json_filename
+            )
             return json_filename
 
     sum_path = testpath / "Sums"
     if (not sum_path.exists()) or (not sum_path.is_dir()):
         log.debug('Test "%s" does not contain scientific files', str(testpath))
         return None
-    
+
     start_tstamp, end_tstamp = None, None
 
     # This is used to pick the first and last element in an array
@@ -108,7 +110,7 @@ def create_json(testpath, filename="metadata.json", always_make=False):
     with open(json_filename, "wt") as fp:
         json.dump(metadata, fp, indent=4, sort_keys=True)
     log.debug('Metadata have been saved in "%s"', json_filename)
-    
+
     return json_filename
 
 
