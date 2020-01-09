@@ -24,6 +24,8 @@ import matplotlib.pylab as plt
 from qubicpack.qubicfp import qubicfp
 import numpy as np
 
+qubicfp.verbosity = 0  # Force qubicfp not to write messages on the screen
+
 default_tmp_dir = Path(tempfile._get_default_tempdir())
 LOG_LEVELS = {
     "critical": log.CRITICAL,
