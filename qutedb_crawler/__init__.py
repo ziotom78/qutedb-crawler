@@ -93,8 +93,18 @@ def create_json(testpath, filename="metadata.json", always_make=False):
     # This is used to pick the first and last element in an array
     sample_mask = np.array([0, -1], dtype="int")
     for curfile in sum_path.glob("science-asic*.fits"):
-        with fits.open(curfile) as fp:
-            cur_start_tstamp, cur_end_tstamp = 1.0e-3 * fp[1].data.field(0)[sample_mask]
+        try:
+            with fits.open(curfile) as fp:
+                cur_start_tstamp, cur_end_tstamp = (
+                    1.0e-3 * fp[1].data.field(0)[sample_mask]
+                )
+        except:
+            log.error(
+                'Unable to read timestamps from file "%s" in test "%s", skipping…',
+                str(curfile),
+                str(testpath),
+            )
+            continue
 
         if (not start_tstamp) or (cur_start_tstamp < start_tstamp):
             start_tstamp = cur_start_tstamp
