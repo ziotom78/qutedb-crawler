@@ -45,9 +45,14 @@ def create_plot(testpath, always_make=False):
         )
         return filename
 
-    a = qubicfp()
-    a.read_qubicstudio_dataset(str(testpath))
-    a.quicklook(xwin=False, filename=filename)
+    try:
+        a = qubicfp()
+        a.read_qubicstudio_dataset(str(testpath))
+        a.quicklook(xwin=False, filename=filename)
+    except:
+        log.error('Unable to create plot for test "%s"', str(testpath))
+        # Do not bother complaining too much, just keep things going
+        return None
 
     try:
         # Optimize the size of the PNG file
