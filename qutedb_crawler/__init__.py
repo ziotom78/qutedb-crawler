@@ -36,12 +36,17 @@ THUMBNAIL_FILE_NAME = "quicklook_plot.png"
 
 
 def create_plot(testpath, always_make=False):
-    if not always_make and Path.glob(THUMBNAIL_FILE_NAME):
-        return
+    filename = testpath / THUMBNAIL_FILE_NAME
+    if (not always_make) and filename.exists():
+        log.debug(
+            'File "%s" already exist for test "%s", so no need to re-create it',
+            THUMBNAIL_FILE_NAME,
+            str(testpath),
+        )
+        return filename
 
     a = qubicfp()
     a.read_qubicstudio_dataset(str(testpath))
-    filename = testpath / THUMBNAIL_FILE_NAME
     a.quicklook(xwin=False, filename=filename)
 
     try:
@@ -58,15 +63,18 @@ def create_plot(testpath, always_make=False):
         log.warn('Unable to compress "%s", leaving it uncompressed', filename)
         pass  # Ignore the error, we'll live with an uncompressed plot!
 
+    return filename
+
 
 def create_json(testpath, filename="metadata.json", always_make=False):
-    json_filename = str(testpath / filename)
-    if not always_make:
-        if testpath.glob(filename):
-            log.debug(
-                'File "%s" already exist, so no need to re-create it', json_filename
-            )
-            return json_filename
+    json_filename = testpath / filename
+    if (not always_make) and json_filename.exists():
+        log.debug(
+            'File "%s" already exist for test "%s", so no need to re-create it',
+            filename,
+            str(testpath),
+        )
+        return json_filename
 
     sum_path = testpath / "Sums"
     if (not sum_path.exists()) or (not sum_path.is_dir()):
@@ -105,9 +113,9 @@ def create_json(testpath, filename="metadata.json", always_make=False):
         "duration_s": (endobs - startobs).seconds,
     }
 
-    with open(json_filename, "wt") as fp:
+    with json_filename.open(mode="wt") as fp:
         json.dump(metadata, fp, indent=4, sort_keys=True)
-    log.debug('Metadata have been saved in "%s"', json_filename)
+    log.debug('Metadata have been saved in "%s"', str(json_filename))
 
     return json_filename
 
