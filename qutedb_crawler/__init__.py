@@ -32,22 +32,20 @@ LOG_LEVELS = {
     "warning": log.WARNING,
     "debug": log.DEBUG,
 }
+THUMBNAIL_FILE_NAME = "quicklook_plot.png"
 
 
 def create_plot(testpath, always_make=False):
-    if not always_make:
-        # TODO: include here the logic to skip the creation of the plot
-        pass
+    if not always_make and Path.glob(THUMBNAIL_FILE_NAME):
+        return
 
     a = qubicfp()
     a.read_qubicstudio_dataset(str(testpath))
-    filename = a.quicklook(xwin=False)
+    filename = testpath / THUMBNAIL_FILE_NAME
+    a.quicklook(xwin=False, filename=filename)
 
-    # TODO: remove this once quicklook gains the ability to specify
-    # the name of the image file to create (PR:
-    # https://github.com/satorchi/qubicpack/issues/2)
-    filename = "quicklook.png"
     try:
+        # Optimize the size of the PNG file
         temp_name = next(tempfile._get_candidate_names())
         full_temp_name = str(default_tmp_dir / temp_name)
         subprocess.run(["pngquant", "-f", "--output", full_temp_name, "32", filename])
